@@ -1,11 +1,8 @@
-# app
+# Gym Workout Logger
 
-> **First thing: rename `app` to your project.** It appears in this file, in
-> `pyproject.toml` (`name`, `[project.scripts]`, `[tool.hatch.build.targets.wheel]`),
-> in the folder `src/app/`, and in the imports under `tests/`. Session 5's lab walks
-> you through it.
+Gym Workout Logger is a command-line tool for people who want to track their gym workouts. The project aims to record exercises, sets, repetitions and weights; its first version lets users enter an exercise and muscle group, but does not save them yet.
 
-One or two sentences on what your program does and who it is for.
+
 
 ## Install
 
@@ -21,9 +18,9 @@ and CI resolve the same ones. When you change a dependency in `pyproject.toml`, 
 ## Run
 
 ```
-uv run app --help
-uv run app greet World
-uv run app greet World --count 3
+uv run gym-workout-logger --help
+uv run gym-workout-logger greet World
+uv run gym-workout-logger greet World --count 3
 ```
 
 ## Develop
@@ -41,7 +38,7 @@ If they pass here, CI passes.
 ## Layout
 
 ```
-src/app/          your package — importable, installable, not just a script
+src/gym-workout-logger/          your package — importable, installable, not just a script
   cli.py          the typer command-line interface
   __main__.py     lets `python -m app` work
 tests/            pytest tests, mirroring src/

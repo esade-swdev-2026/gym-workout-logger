@@ -1,28 +1,23 @@
 from typer.testing import CliRunner
 
-from app.cli import app
+from gym_workout_logger.cli import app
 
 runner = CliRunner()
 
 
-def test_greet_says_hello() -> None:
-    result = runner.invoke(app, ["greet", "Ada"])
+def test_add_exercise() -> None:
+    result = runner.invoke(app, ["add-exercise", "Squat", "--muscle-group", "legs"])
     assert result.exit_code == 0
-    assert "Hello, Ada!" in result.stdout
+    assert "Exercise: Squat | Muscle group: legs" in result.output
 
 
-def test_greet_repeats_with_count() -> None:
-    result = runner.invoke(app, ["greet", "Ada", "--count", "3"])
+def test_default_muscle_group() -> None:
+    result = runner.invoke(app, ["add-exercise", "Squat"])
     assert result.exit_code == 0
-    assert result.stdout.count("Hello, Ada!") == 3
+    assert "Muscle group: full body" in result.output
 
 
-def test_greet_rejects_bad_count() -> None:
-    result = runner.invoke(app, ["greet", "Ada", "--count", "0"])
+def test_empty_name() -> None:
+    result = runner.invoke(app, ["add-exercise", " "])
     assert result.exit_code == 1
-
-
-def test_bye_says_goodbye() -> None:
-    result = runner.invoke(app, ["bye", "Ada"])
-    assert result.exit_code == 0
-    assert "Goodbye, Ada." in result.stdout
+    assert "Exercise name cannot be empty" in result.output

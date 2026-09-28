@@ -19,8 +19,8 @@ and CI resolve the same ones. When you change a dependency in `pyproject.toml`, 
 
 ```
 uv run gym-workout-logger --help
-uv run gym-workout-logger greet World
-uv run gym-workout-logger greet World --count 3
+uv run gym-workout-logger add-exercise "Bench Press"
+uv run gym-workout-logger add-exercise "Bench Press" --muscle-group chest
 ```
 
 ## Develop

@@ -2,6 +2,9 @@
 
 Gym Workout Logger is a command-line tool for people who want to track their gym workouts. The project aims to record exercises, sets, repetitions and weights; its first version lets users enter an exercise and muscle group, but does not save them yet.
 
+## I/O shell
+
+`src/gym_workout_logger/cli.py`, function `add_exercise`: three `typer.echo` calls display normal and error messages, and two `raise typer.Exit(code=1)` calls exit on invalid input. No file reads or writes occur in this module.
 
 
 ## Install

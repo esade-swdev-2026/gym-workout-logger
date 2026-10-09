@@ -1,5 +1,11 @@
 import typer
 
+from gym_workout_logger.workout import (
+    create_exercise,
+    is_valid_exercise_name,
+    is_valid_muscle_group,
+)
+
 app = typer.Typer(help="Replace this with your project's command-line interface.")
 
 
@@ -13,16 +19,17 @@ def add_exercise(
     name: str,
     muscle_group: str = typer.Option("full body", "--muscle-group"),
 ) -> None:
-    """Add an exercise to your workout."""
-    if not name.strip():
+    if not is_valid_exercise_name(name):
         typer.echo("Exercise name cannot be empty.", err=True)
         raise typer.Exit(code=1)
 
-    if not muscle_group.strip():
+    if not is_valid_muscle_group(muscle_group):
         typer.echo("Muscle group cannot be empty.", err=True)
         raise typer.Exit(code=1)
 
-    typer.echo(f"Exercise: {name.strip()} | Muscle group: {muscle_group.strip()}")
+    exercise = create_exercise(name, muscle_group)
+
+    typer.echo(f"Exercise: {exercise.name} | Muscle group: {exercise.muscle_group}")
 
 
 if __name__ == "__main__":

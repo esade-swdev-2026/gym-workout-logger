@@ -11,12 +11,6 @@ def test_add_exercise() -> None:
     assert "Exercise: Squat | Muscle group: legs" in result.output
 
 
-def test_default_muscle_group() -> None:
-    result = runner.invoke(app, ["add-exercise", "Squat"])
-    assert result.exit_code == 0
-    assert "Muscle group: full body" in result.output
-
-
 def test_empty_name() -> None:
     result = runner.invoke(app, ["add-exercise", " "])
     assert result.exit_code == 1

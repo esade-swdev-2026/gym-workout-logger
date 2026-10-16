@@ -8,41 +8,22 @@ from gym_workout_logger.workout import (
     current_workout,
     find_exercise,
     find_workout,
-    is_valid_exercise_name,
-    is_valid_muscle_group,
+    format_summary,
+    is_blank,
     is_valid_reps,
     is_valid_weight,
     next_workout_id,
-    normalize_exercise_name,
-    normalize_muscle_group,
     summarize_exercise,
+    summarize_workout,
 )
-
-
-def test_exercise_name_removes_surrounding_whitespace() -> None:
-    assert normalize_exercise_name("  Squat  ") == "Squat"
-
-
-def test_exercise_muscle_group_removes_surrounding_whitespace() -> None:
-    assert normalize_muscle_group("  Legs  ") == "Legs"
 
 
 @pytest.mark.parametrize(
-    ("name", "expected"),
-    [("Squat", True), ("", False), ("   ", False)],
+    ("text", "expected"),
+    [("Squat", False), (" legs ", False), ("", True), ("   ", True)],
 )
-def test_exercise_name_validation(name: str, expected: bool) -> None:
-    result = is_valid_exercise_name(name)
-    assert result == expected
-
-
-@pytest.mark.parametrize(
-    ("muscle_group", "expected"),
-    [("legs", True), ("", False), ("   ", False)],
-)
-def test_muscle_group_validation(muscle_group: str, expected: bool) -> None:
-    result = is_valid_muscle_group(muscle_group)
-    assert result == expected
+def test_is_blank(text: str, expected: bool) -> None:
+    assert is_blank(text) == expected
 
 
 def test_create_exercise_removes_surrounding_whitespace() -> None:
@@ -62,13 +43,13 @@ def test_find_exercise_returns_none_when_missing() -> None:
     assert result is None
 
 
-@pytest.mark.parametrize("reps, expected", [(10, True), (1, True), (0, False), (-3, False)])
+@pytest.mark.parametrize(("reps", "expected"), [(10, True), (1, True), (0, False), (-3, False)])
 def test_reps_must_be_positive(reps: int, expected: bool) -> None:
     assert is_valid_reps(reps) == expected
 
 
 @pytest.mark.parametrize(
-    "weight, expected",
+    ("weight", "expected"),
     [
         (30.0, True),
         (0.0, True),
@@ -137,3 +118,24 @@ def test_summary_accepts_bodyweight_exercises() -> None:
     exercise = create_exercise("Push Up", "chest")
     result = summarize_exercise(exercise, [WorkoutSet("Push Up", 12, 0.0, 1)], 1)
     assert result == ExerciseSummary("Push Up", "chest", 1, 12, 0.0)
+
+
+def test_workout_summary_skips_exercises_without_sets() -> None:
+    exercises = [create_exercise("Squat", "legs"), create_exercise("Bench Press", "chest")]
+    workout_sets = [WorkoutSet("Bench Press", 6, 40.0, 1)]
+    result = summarize_workout(exercises, workout_sets, 1)
+    assert result == [ExerciseSummary("Bench Press", "chest", 1, 6, 240.0)]
+
+
+def test_format_summary_shows_one_line_per_exercise() -> None:
+    summaries = [ExerciseSummary("Squat", "legs", 2, 18, 940.0)]
+    result = format_summary(1, summaries)
+    assert result == [
+        "Workout 1",
+        "Exercise: Squat | Muscle group: legs | Sets: 2 | Reps: 18 | Volume: 940 kg",
+    ]
+
+
+def test_format_summary_without_sets_says_so() -> None:
+    result = format_summary(2, [])
+    assert result == ["Workout 2", "No sets logged for this workout yet."]

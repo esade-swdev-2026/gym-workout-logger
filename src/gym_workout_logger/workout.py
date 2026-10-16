@@ -4,33 +4,10 @@ from dataclasses import dataclass
 from math import isfinite
 
 
-def normalize_exercise_name(name: str) -> str:
-    return name.strip()
-
-
-def normalize_muscle_group(muscle_group: str) -> str:
-    return muscle_group.strip()
-
-
-def is_valid_exercise_name(name: str) -> bool:
-    return bool(name.strip())
-
-
-def is_valid_muscle_group(muscle_group: str) -> bool:
-    return bool(muscle_group.strip())
-
-
 @dataclass(frozen=True)
 class Exercise:
     name: str
     muscle_group: str
-
-
-def create_exercise(name: str, muscle_group: str) -> Exercise:
-    return Exercise(
-        name=normalize_exercise_name(name),
-        muscle_group=normalize_muscle_group(muscle_group),
-    )
 
 
 @dataclass(frozen=True)
@@ -55,6 +32,10 @@ class ExerciseSummary:
     total_volume: float
 
 
+def is_blank(text: str) -> bool:
+    return text.strip() == ""
+
+
 def is_valid_reps(reps: int) -> bool:
     return reps > 0
 
@@ -63,8 +44,13 @@ def is_valid_weight(weight: float) -> bool:
     return isfinite(weight) and weight >= 0.0
 
 
+def create_exercise(name: str, muscle_group: str) -> Exercise:
+    return Exercise(name=name.strip(), muscle_group=muscle_group.strip())
+
+
 def find_exercise(exercises: list[Exercise], name: str) -> Exercise | None:
-    wanted_name = normalize_exercise_name(name).lower()
+    # Names are matched ignoring case and surrounding spaces, so "squat " finds "Squat".
+    wanted_name = name.strip().lower()
     for exercise in exercises:
         if exercise.name.lower() == wanted_name:
             return exercise
@@ -98,10 +84,11 @@ def summarize_exercise(
     total_volume = 0.0
 
     for workout_set in workout_sets:
-        if workout_set.workout_id == workout_id and workout_set.exercise_name == exercise.name:
-            total_sets += 1
-            total_reps += workout_set.reps
-            total_volume += workout_set.reps * workout_set.weight
+        if workout_set.workout_id != workout_id or workout_set.exercise_name != exercise.name:
+            continue
+        total_sets += 1
+        total_reps += workout_set.reps
+        total_volume += workout_set.reps * workout_set.weight
 
     return ExerciseSummary(
         name=exercise.name,
@@ -110,3 +97,27 @@ def summarize_exercise(
         total_reps=total_reps,
         total_volume=total_volume,
     )
+
+
+def summarize_workout(
+    exercises: list[Exercise], workout_sets: list[WorkoutSet], workout_id: int
+) -> list[ExerciseSummary]:
+    summaries = []
+    for exercise in exercises:
+        summary = summarize_exercise(exercise, workout_sets, workout_id)
+        if summary.total_sets > 0:
+            summaries.append(summary)
+    return summaries
+
+
+def format_summary(workout_id: int, summaries: list[ExerciseSummary]) -> list[str]:
+    lines = [f"Workout {workout_id}"]
+    if not summaries:
+        lines.append("No sets logged for this workout yet.")
+    for summary in summaries:
+        lines.append(
+            f"Exercise: {summary.name} | Muscle group: {summary.muscle_group} | "
+            f"Sets: {summary.total_sets} | Reps: {summary.total_reps} | "
+            f"Volume: {summary.total_volume:g} kg"
+        )
+    return lines

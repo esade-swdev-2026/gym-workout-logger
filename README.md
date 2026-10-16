@@ -4,7 +4,7 @@ Gym Workout Logger is a Python terminal program for recording gym exercises and 
 
 ## Install
 
-Clone the repository and install the dependencies:
+Needs [uv](https://docs.astral.sh/uv/) and Python 3.13. Clone the repository and install the dependencies:
 
 ```bash
 git clone https://github.com/esade-swdev-2026/gym-workout-logger.git
@@ -48,7 +48,9 @@ uv run gym-workout-logger summary --workout-id 1
 
 `summary` always shows the latest workout. Use `--workout-id` to view an earlier one. Workout numbers start at 1 and increase by 1 each time you run `start-workout`.
 
-An exercise must be added once before logging a set. Exercise names ignore differences in uppercase/lowercase and surrounding spaces. Sets need positive whole-number reps and a non-negative, finite weight. Use `0` kg for bodyweight exercises.
+An exercise must be added once before logging a set. If you leave out `--muscle-group`, it is saved as `full body`. Exercise names ignore differences in uppercase/lowercase and surrounding spaces. Sets need positive whole-number reps and a non-negative, finite weight. Use `0` kg for bodyweight exercises.
+
+`uv run gym-workout-logger <command> --help` shows the arguments and options of each command. Invalid input prints a short message instead of a traceback, and the program exits with a non-zero code.
 
 ## Saved data
 
@@ -58,9 +60,7 @@ The program creates three CSV files in the folder where you run the commands:
 - `workouts.csv` — workout numbers
 - `workout_sets.csv` — sets linked to a workout number and an exercise
 
-They are ignored by Git. Your data stays there between runs, even after closing the terminal. No accounts or database are needed.
-
-**If you tested an older version of this project**, its `workout_sets.csv` did not contain workout numbers. The new version uses a different format. Before testing it, back up your old CSV files and start with fresh ones. Do not overwrite CSV files if you want to keep those old test records.
+They are ignored by Git. Your data stays there between runs, even after closing the terminal. To start again from nothing, delete the three files.
 
 ## Checks
 
@@ -84,9 +84,12 @@ src/gym_workout_logger/
     storage.py   CSV file reading and writing
     __main__.py  run the package with Python
 
-tests/          pytest tests
+tests/
+    test_workout.py  the calculations, with plain data
+    test_storage.py  reading and writing CSV files in a temporary folder
+    test_cli.py      the commands, run with Typer's CliRunner
 pyproject.toml  dependencies and configuration
 uv.lock         locked dependency versions
 ```
 
-The calculations in `workout.py` use plain Python data rather than files or printing. This makes them straightforward to test.
+The calculations in `workout.py` use plain Python data rather than files or printing, so they are straightforward to test. `cli.py` is the thin outer layer: it reads the files, calls those functions and prints the result.

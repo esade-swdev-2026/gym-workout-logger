@@ -8,3 +8,6 @@ build/
 .ruff_cache/
 .pytest_cache/
 .coverage
+/exercises.csv*
+/workout_sets.csv*
+/workouts.csv*

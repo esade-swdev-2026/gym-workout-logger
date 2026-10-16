@@ -1,49 +1,92 @@
 # Gym Workout Logger
 
-Gym Workout Logger is a command-line tool for people who want to track their gym workouts. The project aims to record exercises, sets, repetitions and weights; its first version lets users enter an exercise and muscle group, but does not save them yet.
-
-## I/O shell
-
-`src/gym_workout_logger/cli.py`, function `add_exercise`: three `typer.echo` calls display normal and error messages, and two `raise typer.Exit(code=1)` calls exit on invalid input. No file reads or writes occur in this module.
-
+Gym Workout Logger is a Python terminal program for recording gym exercises and workouts. You can add exercises, start a workout, log sets with reps and weight, and see a summary of that workout. Previous workouts are kept separately.
 
 ## Install
 
-```
+Clone the repository and install the dependencies:
+
+```bash
+git clone https://github.com/esade-swdev-2026/gym-workout-logger.git
+cd gym-workout-logger
 uv sync
 ```
 
-This creates a virtual environment and installs everything, including the development
-tools, from `uv.lock` — the committed file that pins exact versions so every teammate
-and CI resolve the same ones. When you change a dependency in `pyproject.toml`, run
-`uv lock` and commit the updated `uv.lock`; CI fails if the two disagree.
+`uv` uses `pyproject.toml` and `uv.lock` to set up the project environment.
 
 ## Run
 
-```
+Run these commands in order, from the project folder:
+
+```bash
 uv run gym-workout-logger --help
-uv run gym-workout-logger add-exercise "Bench Press"
 uv run gym-workout-logger add-exercise "Bench Press" --muscle-group chest
+uv run gym-workout-logger add-exercise "Squat" --muscle-group legs
+uv run gym-workout-logger start-workout
+uv run gym-workout-logger log-set "Bench Press" 10 50
+uv run gym-workout-logger log-set "bench press" 8 55
+uv run gym-workout-logger log-set "Squat" 8 60
+uv run gym-workout-logger summary
 ```
 
-## Develop
+The summary shows the exercises completed in **Workout 1**, including sets, reps, and total volume (reps × weight, in kg):
 
-```
-uv run ruff check .          # lint
-uv run ruff format .         # format (CI runs `--check` and fails on a diff)
-uv run mypy src tests        # types
-uv run pytest                # tests
+```text
+Workout 1
+Exercise: Bench Press | Muscle group: chest | Sets: 2 | Reps: 18 | Volume: 940 kg
+Exercise: Squat | Muscle group: legs | Sets: 1 | Reps: 8 | Volume: 480 kg
 ```
 
-These four commands are exactly what `.github/workflows/check.yml` runs on every push.
-If they pass here, CI passes.
+To train again, start another workout. This starts with no sets but keeps Workout 1 saved:
 
-## Layout
+```bash
+uv run gym-workout-logger start-workout
+uv run gym-workout-logger log-set "Bench Press" 6 60
+uv run gym-workout-logger summary
+uv run gym-workout-logger summary --workout-id 1
+```
 
+`summary` always shows the latest workout. Use `--workout-id` to view an earlier one. Workout numbers start at 1 and increase by 1 each time you run `start-workout`.
+
+An exercise must be added once before logging a set. Exercise names ignore differences in uppercase/lowercase and surrounding spaces. Sets need positive whole-number reps and a non-negative, finite weight. Use `0` kg for bodyweight exercises.
+
+## Saved data
+
+The program creates three CSV files in the folder where you run the commands:
+
+- `exercises.csv` — exercises you have added
+- `workouts.csv` — workout numbers
+- `workout_sets.csv` — sets linked to a workout number and an exercise
+
+They are ignored by Git. Your data stays there between runs, even after closing the terminal. No accounts or database are needed.
+
+**If you tested an older version of this project**, its `workout_sets.csv` did not contain workout numbers. The new version uses a different format. Before testing it, back up your old CSV files and start with fresh ones. Do not overwrite CSV files if you want to keep those old test records.
+
+## Checks
+
+Run the same checks as GitHub Actions:
+
+```bash
+uv run ruff check .
+uv run ruff format --check .
+uv run mypy src tests
+uv run pytest
 ```
-src/gym-workout-logger/          your package — importable, installable, not just a script
-  cli.py          the typer command-line interface
-  __main__.py     lets `python -m app` work
-tests/            pytest tests, mirroring src/
-pyproject.toml    dependencies and tool configuration — the single source of truth
+
+To format the code before checking, use `uv run ruff format .`.
+
+## Project layout
+
+```text
+src/gym_workout_logger/
+    cli.py       terminal commands, output and error messages
+    workout.py   data classes, validation and calculations
+    storage.py   CSV file reading and writing
+    __main__.py  run the package with Python
+
+tests/          pytest tests
+pyproject.toml  dependencies and configuration
+uv.lock         locked dependency versions
 ```
+
+The calculations in `workout.py` use plain Python data rather than files or printing. This makes them straightforward to test.

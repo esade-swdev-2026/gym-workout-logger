@@ -13,6 +13,7 @@ class Exercise:
 @dataclass(frozen=True)
 class Workout:
     workout_id: int
+    finished: bool = False
 
 
 @dataclass(frozen=True)
@@ -67,6 +68,10 @@ def current_workout(workouts: list[Workout]) -> Workout | None:
     if not workouts:
         return None
     return workouts[-1]
+
+
+def finish_workout(workout: Workout) -> Workout:
+    return Workout(workout.workout_id, finished=True)
 
 
 def find_workout(workouts: list[Workout], workout_id: int) -> Workout | None:

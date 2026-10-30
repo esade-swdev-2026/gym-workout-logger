@@ -8,6 +8,7 @@ from gym_workout_logger.workout import (
     current_workout,
     find_exercise,
     find_workout,
+    finish_workout,
     format_summary,
     is_blank,
     is_valid_reps,
@@ -139,3 +140,7 @@ def test_format_summary_shows_one_line_per_exercise() -> None:
 def test_format_summary_without_sets_says_so() -> None:
     result = format_summary(2, [])
     assert result == ["Workout 2", "No sets logged for this workout yet."]
+
+
+def test_finish_workout_changes_only_status() -> None:
+    assert finish_workout(Workout(2)) == Workout(2, finished=True)

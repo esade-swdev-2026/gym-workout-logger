@@ -13,7 +13,7 @@ from gym_workout_logger.workout import (
 )
 
 EXERCISES_HEADER = ["name", "muscle_group"]
-WORKOUTS_HEADER = ["workout_id"]
+WORKOUTS_HEADER = ["workout_id", "finished"]
 WORKOUT_SETS_HEADER = ["workout_id", "exercise_name", "reps", "weight"]
 
 
@@ -62,17 +62,39 @@ def save_exercise(path: Path, exercise: Exercise) -> None:
 
 
 def read_workouts(path: Path) -> list[Workout]:
-    workouts = []
-    for row in read_rows(path, WORKOUTS_HEADER):
-        workout_id = int(row[0])
-        if workout_id <= 0:
-            raise ValueError(f"{path.name} has a workout number that is not positive.")
-        workouts.append(Workout(workout_id))
+    workouts: list[Workout] = []
+    if not path.exists():
+        return workouts
+    with path.open(newline="", encoding="utf-8") as file:
+        reader = csv.reader(file)
+        header = next(reader, None)
+        if header not in (WORKOUTS_HEADER, ["workout_id"]):
+            raise ValueError(f"{path.name} does not have the expected header.")
+        for row in reader:
+            if len(row) != len(header):
+                raise ValueError(f"{path.name} has a row with the wrong number of values.")
+            workout_id = int(row[0])
+            if workout_id <= 0:
+                raise ValueError(f"{path.name} has a workout number that is not positive.")
+            finished = len(row) == 2 and row[1] == "True"
+            if len(row) == 2 and row[1] not in ("True", "False"):
+                raise ValueError(f"{path.name} has an invalid workout status.")
+            workouts.append(Workout(workout_id, finished))
     return workouts
 
 
 def save_workout(path: Path, workout: Workout) -> None:
-    append_row(path, WORKOUTS_HEADER, [workout.workout_id])
+    workouts = read_workouts(path)
+    workouts.append(workout)
+    write_workouts(path, workouts)
+
+
+def write_workouts(path: Path, workouts: list[Workout]) -> None:
+    with path.open("w", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow(WORKOUTS_HEADER)
+        for workout in workouts:
+            writer.writerow([workout.workout_id, workout.finished])
 
 
 def read_workout_sets(path: Path) -> list[WorkoutSet]:

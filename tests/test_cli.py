@@ -109,3 +109,39 @@ def test_damaged_file_gives_a_message_not_a_traceback(in_empty_folder: Path) -> 
 
     assert result.exit_code == 1
     assert "Could not read saved data" in result.stderr
+
+
+def test_finish_workout_blocks_new_sets(in_empty_folder: Path) -> None:
+    runner.invoke(app, ["add-exercise", "Squat"])
+    runner.invoke(app, ["start-workout"])
+    runner.invoke(app, ["log-set", "Squat", "10", "50"])
+
+    finished = runner.invoke(app, ["finish-workout"])
+    assert finished.exit_code == 0
+    assert "Finished workout 1" in finished.stdout
+    assert "Volume: 500 kg" in finished.stdout
+
+    blocked = runner.invoke(app, ["log-set", "Squat", "8", "55"])
+    assert blocked.exit_code == 1
+    assert "already finished" in blocked.stderr
+
+    old_summary = runner.invoke(app, ["summary", "--workout-id", "1"])
+    assert "Sets: 1 | Reps: 10 | Volume: 500 kg" in old_summary.stdout
+
+    runner.invoke(app, ["start-workout"])
+    allowed = runner.invoke(app, ["log-set", "Squat", "8", "55"])
+    assert allowed.exit_code == 0
+
+
+def test_finish_workout_without_start_fails(in_empty_folder: Path) -> None:
+    result = runner.invoke(app, ["finish-workout"])
+    assert result.exit_code == 1
+    assert "No workout started" in result.stderr
+
+
+def test_cannot_finish_twice(in_empty_folder: Path) -> None:
+    runner.invoke(app, ["start-workout"])
+    runner.invoke(app, ["finish-workout"])
+    result = runner.invoke(app, ["finish-workout"])
+    assert result.exit_code == 1
+    assert "already finished" in result.stderr

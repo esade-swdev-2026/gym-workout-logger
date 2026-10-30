@@ -9,6 +9,7 @@ from gym_workout_logger.storage import (
     save_exercise,
     save_workout,
     save_workout_set,
+    write_workouts,
 )
 from gym_workout_logger.workout import (
     Workout,
@@ -17,6 +18,7 @@ from gym_workout_logger.workout import (
     current_workout,
     find_exercise,
     find_workout,
+    finish_workout,
     format_summary,
     is_blank,
     is_valid_reps,
@@ -107,6 +109,9 @@ def log_set(name: str, reps: int, weight: float) -> None:
     if workout is None:
         typer.echo("No workout started. Run start-workout first.", err=True)
         raise typer.Exit(1)
+    if workout.finished:
+        typer.echo("Workout already finished. Start another workout first.", err=True)
+        raise typer.Exit(1)
     exercise = find_exercise(exercises, name)
     if exercise is None:
         typer.echo("Exercise not found. Add it before logging a set.", err=True)
@@ -145,6 +150,44 @@ def summary(workout_id: int | None = typer.Option(None, "--workout-id")) -> None
         typer.echo("Workout not found. Run start-workout first.", err=True)
         raise typer.Exit(1)
 
+    summaries = summarize_workout(exercises, workout_sets, workout.workout_id)
+    for line in format_summary(workout.workout_id, summaries):
+        typer.echo(line)
+
+
+@app.command("finish-workout")
+def finish_workout_command() -> None:
+    """Finish the latest workout and show its summary."""
+    try:
+        workouts = read_workouts(WORKOUTS_FILE)
+        exercises = read_exercises(EXERCISES_FILE)
+        workout_sets = read_workout_sets(WORKOUT_SETS_FILE)
+    except (OSError, ValueError) as error:
+        typer.echo(f"Could not read saved data: {error}", err=True)
+        raise typer.Exit(1) from None
+
+    workout = current_workout(workouts)
+    if workout is None:
+        typer.echo("No workout started. Run start-workout first.", err=True)
+        raise typer.Exit(1)
+    if workout.finished:
+        typer.echo("Workout already finished.", err=True)
+        raise typer.Exit(1)
+
+    updated_workouts = []
+    for saved_workout in workouts:
+        if saved_workout.workout_id == workout.workout_id:
+            updated_workouts.append(finish_workout(saved_workout))
+        else:
+            updated_workouts.append(saved_workout)
+
+    try:
+        write_workouts(WORKOUTS_FILE, updated_workouts)
+    except OSError as error:
+        typer.echo(f"Could not finish workout: {error}", err=True)
+        raise typer.Exit(1) from None
+
+    typer.echo(f"Finished workout {workout.workout_id}.")
     summaries = summarize_workout(exercises, workout_sets, workout.workout_id)
     for line in format_summary(workout.workout_id, summaries):
         typer.echo(line)

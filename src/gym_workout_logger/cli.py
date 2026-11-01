@@ -18,6 +18,7 @@ from gym_workout_logger.workout import (
     find_exercise,
     find_workout,
     format_summary,
+    format_workout_list,
     is_blank,
     is_valid_reps,
     is_valid_weight,
@@ -147,4 +148,17 @@ def summary(workout_id: int | None = typer.Option(None, "--workout-id")) -> None
 
     summaries = summarize_workout(exercises, workout_sets, workout.workout_id)
     for line in format_summary(workout.workout_id, summaries):
+        typer.echo(line)
+
+
+@app.command()
+def list_workouts() -> None:
+    """Show the numbers of all saved workouts."""
+    try:
+        workouts = read_workouts(WORKOUTS_FILE)
+    except (OSError, ValueError) as error:
+        typer.echo(f"Could not read saved data: {error}", err=True)
+        raise typer.Exit(1) from None
+
+    for line in format_workout_list(workouts):
         typer.echo(line)

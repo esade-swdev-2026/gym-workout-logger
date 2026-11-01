@@ -142,5 +142,17 @@ def test_format_summary_without_sets_says_so() -> None:
     assert result == ["Workout 2", "No sets logged for this workout yet."]
 
 
+def test_format_workout_list_empty() -> None:
+    from gym_workout_logger.workout import format_workout_list
+
+    assert format_workout_list([]) == ["No workouts saved yet."]
+
+
+def test_format_workout_list_multiple() -> None:
+    from gym_workout_logger.workout import format_workout_list
+
+    assert format_workout_list([Workout(1), Workout(2)]) == ["Workout 1", "Workout 2"]
+
+
 def test_finish_workout_changes_only_status() -> None:
     assert finish_workout(Workout(2)) == Workout(2, finished=True)

@@ -126,3 +126,10 @@ def format_summary(workout_id: int, summaries: list[ExerciseSummary]) -> list[st
             f"Volume: {summary.total_volume:g} kg"
         )
     return lines
+
+
+def format_workout_list(workouts: list[Workout]) -> list[str]:
+    """Return one line for each saved workout."""
+    if not workouts:
+        return ["No workouts saved yet."]
+    return [f"Workout {workout.workout_id}" for workout in workouts]

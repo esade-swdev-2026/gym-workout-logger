@@ -111,6 +111,21 @@ def test_damaged_file_gives_a_message_not_a_traceback(in_empty_folder: Path) -> 
     assert "Could not read saved data" in result.stderr
 
 
+def test_list_workouts_empty(in_empty_folder: Path) -> None:
+    result = runner.invoke(app, ["list-workouts"])
+    assert result.exit_code == 0
+    assert "No workouts saved yet." in result.stdout
+
+
+def test_list_workouts_shows_saved_workouts(in_empty_folder: Path) -> None:
+    runner.invoke(app, ["start-workout"])
+    runner.invoke(app, ["start-workout"])
+    result = runner.invoke(app, ["list-workouts"])
+    assert result.exit_code == 0
+    assert "Workout 1" in result.stdout
+    assert "Workout 2" in result.stdout
+
+
 def test_finish_workout_blocks_new_sets(in_empty_folder: Path) -> None:
     runner.invoke(app, ["add-exercise", "Squat"])
     runner.invoke(app, ["start-workout"])

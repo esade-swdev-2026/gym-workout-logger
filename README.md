@@ -94,6 +94,16 @@ uv.lock         locked dependency versions
 
 The calculations in `workout.py` use plain Python data rather than files or printing, so they are straightforward to test. `cli.py` is the thin outer layer: it reads the files, calls those functions and prints the result.
 
+## List previous workouts
+
+To see all saved workout numbers, use:
+
+```bash
+uv run gym-workout-logger list-workouts
+```
+
+If no workout has been started, the program says so. Use `summary --workout-id 1` to view an individual workout.
+
 
 ### Finish a workout
 

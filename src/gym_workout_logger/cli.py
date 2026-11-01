@@ -2,6 +2,7 @@ from pathlib import Path
 
 import typer
 
+from gym_workout_logger.delete_workout import delete_workout
 from gym_workout_logger.storage import (
     read_exercises,
     read_workout_sets,
@@ -34,6 +35,7 @@ WORKOUT_SETS_FILE = Path("workout_sets.csv")
 DEFAULT_MUSCLE_GROUP = "full body"
 
 app = typer.Typer(help="Record gym exercises, sets, reps and weights.")
+app.command("delete-workout")(delete_workout)
 
 
 @app.callback()

@@ -118,3 +118,18 @@ def save_workout_set(path: Path, workout_set: WorkoutSet) -> None:
         WORKOUT_SETS_HEADER,
         [workout_set.workout_id, workout_set.exercise_name, workout_set.reps, workout_set.weight],
     )
+
+
+def write_workout_sets(path: Path, workout_sets: list[WorkoutSet]) -> None:
+    with path.open("w", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow(WORKOUT_SETS_HEADER)
+        for workout_set in workout_sets:
+            writer.writerow(
+                [
+                    workout_set.workout_id,
+                    workout_set.exercise_name,
+                    workout_set.reps,
+                    workout_set.weight,
+                ]
+            )

@@ -58,7 +58,7 @@ def test_remove_from_empty_list_returns_none() -> None:
     assert remove_workout_set([], 1, 1) is None
 
 
-def test_delete_command_saves_changes_and_rejects_missing_set(
+def test_delete_command_saves_changes(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
     workout_sets: list[WorkoutSet],
@@ -75,10 +75,21 @@ def test_delete_command_saves_changes_and_rejects_missing_set(
     assert "Deleted set 2 from workout 1." in result.output
     assert read_workout_sets(sets_file) == workout_sets[:2]
 
-    saved_content = sets_file.read_text()
+
+def test_delete_command_rejects_missing_set(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    workout_sets: list[WorkoutSet],
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    write_workouts(Path("workouts.csv"), [Workout(1), Workout(2)])
+    sets_file = Path("workout_sets.csv")
+    write_workout_sets(sets_file, workout_sets)
+    original_content = sets_file.read_text()
+    runner = CliRunner()
 
     result = runner.invoke(app, ["delete-set", "--workout-id", "1", "--set-number", "8"])
 
     assert result.exit_code == 1
     assert "Set not found" in result.output
-    assert sets_file.read_text() == saved_content
+    assert sets_file.read_text() == original_content

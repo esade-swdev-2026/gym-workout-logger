@@ -15,13 +15,15 @@ def remove_workout_set(
 ) -> list[WorkoutSet] | None:
     if set_number < 1:
         return None
-    current_number = 0
-    for index, workout_set in enumerate(workout_sets):
-        if workout_set.workout_id == workout_id:
-            current_number += 1
-            if current_number == set_number:
-                return workout_sets[:index] + workout_sets[index + 1 :]
-    return None
+    positions = [
+        index
+        for index, workout_set in enumerate(workout_sets)
+        if workout_set.workout_id == workout_id
+    ]
+    if set_number > len(positions):
+        return None
+    index_to_delete = positions[set_number - 1]
+    return workout_sets[:index_to_delete] + workout_sets[index_to_delete + 1 :]
 
 
 def delete_set(

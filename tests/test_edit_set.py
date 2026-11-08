@@ -35,7 +35,7 @@ def test_edit_second_set_keeps_duplicate_and_original_list(
 
 @pytest.mark.parametrize(
     ("workout_id", "set_number"),
-    [(1, 0), (1, -1), (1, 3), (9, 1)],
+    [(1, 3), (9, 1)],
 )
 def test_edit_missing_set_returns_none(
     workout_sets: list[WorkoutSet], workout_id: int, set_number: int
@@ -56,7 +56,14 @@ def test_edit_missing_set_returns_none(
 def test_edit_rejects_invalid_values(
     workout_sets: list[WorkoutSet], reps: int, weight: float
 ) -> None:
-    assert replace_workout_set(workout_sets, 1, 1, reps, weight) is None
+    with pytest.raises(ValueError):
+        replace_workout_set(workout_sets, 1, 1, reps, weight)
+
+
+@pytest.mark.parametrize("set_number", [0, -1])
+def test_edit_rejects_invalid_set_number(workout_sets: list[WorkoutSet], set_number: int) -> None:
+    with pytest.raises(ValueError, match="Set number must be positive"):
+        replace_workout_set(workout_sets, 1, set_number, 8, 55.0)
 
 
 def test_edit_accepts_zero_weight(workout_sets: list[WorkoutSet]) -> None:
@@ -79,6 +86,7 @@ def test_edit_command_saves_changes_and_rejects_invalid_values(
     sets_file = Path("workout_sets.csv")
     write_workout_sets(sets_file, workout_sets)
     runner = CliRunner()
+
     arguments = [
         "edit-set",
         "--workout-id",

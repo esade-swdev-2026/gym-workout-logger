@@ -23,8 +23,11 @@ def replace_workout_set(
     reps: int,
     weight: float,
 ) -> list[WorkoutSet] | None:
-    if set_number < 1 or not is_valid_reps(reps) or not is_valid_weight(weight):
-        return None
+    if set_number < 1:
+        raise ValueError("Set number must be positive.")
+
+    if not is_valid_reps(reps) or not is_valid_weight(weight):
+        raise ValueError("Reps must be positive; weight must be finite and non-negative.")
 
     current_number = 0
     for index, workout_set in enumerate(workout_sets):
@@ -34,6 +37,7 @@ def replace_workout_set(
                 updated_sets = workout_sets.copy()
                 updated_sets[index] = replace(workout_set, reps=reps, weight=weight)
                 return updated_sets
+
     return None
 
 
@@ -43,20 +47,15 @@ def edit_set(
     reps: int = typer.Option(..., "--reps"),
     weight: float = typer.Option(..., "--weight"),
 ) -> None:
-    if not is_valid_reps(reps) or not is_valid_weight(weight):
-        typer.echo(
-            "Reps must be positive; weight must be finite and non-negative.",
-            err=True,
-        )
-        raise typer.Exit(1)
-
     try:
         workouts = read_workouts(Path("workouts.csv"))
+
         if find_workout(workouts, workout_id) is None:
             typer.echo("Workout not found.", err=True)
             raise typer.Exit(1)
 
         workout_sets = read_workout_sets(Path("workout_sets.csv"))
+
         updated_sets = replace_workout_set(workout_sets, workout_id, set_number, reps, weight)
 
         if updated_sets is None:
@@ -67,6 +66,9 @@ def edit_set(
             raise typer.Exit(1)
 
         write_workout_sets(Path("workout_sets.csv"), updated_sets)
+
+    except typer.Exit:
+        raise
     except (OSError, ValueError) as error:
         typer.echo(f"Could not edit set: {error}", err=True)
         raise typer.Exit(1) from None

@@ -114,3 +114,16 @@ uv run gym-workout-logger finish-workout
 ```
 
 The program shows a final summary and saves the workout as finished. You cannot add more sets to it. Run `start-workout` to create another workout. Previous summaries remain available through `summary --workout-id 1`.
+
+
+## Delete an individual set
+
+Set numbers start at 1 within each workout, following the order in which
+sets were logged across all exercises.
+
+```bash
+uv run gym-workout-logger delete-set --workout-id 1 --set-number 2
+```
+
+This removes only the selected set. Other sets and workouts are preserved.
+After deletion, later set numbers shift down by one.

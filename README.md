@@ -136,3 +136,28 @@ uv run gym-workout-logger delete-set --workout-id 1 --set-number 2
 
 This removes only the selected set. Other sets and workouts are preserved.
 After deletion, later set numbers shift down by one.
+
+## Run with Docker
+
+You can run Gym Workout Logger using Docker without installing Python or uv locally.
+
+Build the Docker image from the project directory:
+
+```bash
+docker build -t gym-workout-logger .
+```
+
+Run the application using a named volume to preserve workout data:
+
+```bash
+docker run --rm -v gym-workout-data:/app/data gym-workout-logger add-exercise "Squat" --muscle-group legs
+docker run --rm -v gym-workout-data:/app/data gym-workout-logger start-workout
+docker run --rm -v gym-workout-data:/app/data gym-workout-logger log-set "Squat" 10 60
+docker run --rm -v gym-workout-data:/app/data gym-workout-logger summary
+```
+
+Each command creates a new container, which is automatically deleted when it finishes because of --rm.
+
+The CSV files are stored in the named volume gym-workout-data, connected to /app/data inside the container.
+
+The data survives container deletion. Always use the same volume name to access previously saved workouts.

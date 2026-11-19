@@ -42,3 +42,15 @@ def test_exercise_progress_unknown(tmp_path: Path, monkeypatch: pytest.MonkeyPat
 
     assert result.exit_code == 1
     assert "Exercise not found" in result.output
+
+
+def test_exercise_progress_no_sets_yet(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    runner = CliRunner()
+
+    assert runner.invoke(app, ["add-exercise", "Squat"]).exit_code == 0
+
+    result = runner.invoke(app, ["exercise-progress", "Squat"])
+
+    assert result.exit_code == 0
+    assert "No sets logged for this exercise yet." in result.output

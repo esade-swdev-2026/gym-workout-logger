@@ -5,6 +5,7 @@ import typer
 from gym_workout_logger.delete_set import delete_set
 from gym_workout_logger.delete_workout import delete_workout
 from gym_workout_logger.edit_set import edit_set
+from gym_workout_logger.list_exercises import list_exercises
 from gym_workout_logger.storage import (
     read_exercises,
     read_workout_sets,
@@ -40,7 +41,7 @@ DEFAULT_MUSCLE_GROUP = "full body"
 app = typer.Typer(help="Record gym exercises, sets, reps and weights.")
 app.command("delete-workout")(delete_workout)
 app.command("delete-set")(delete_set)
-
+app.command("list-exercises")(list_exercises)
 app.command("edit-set")(edit_set)
 
 

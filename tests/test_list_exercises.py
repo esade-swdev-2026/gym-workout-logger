@@ -25,3 +25,13 @@ def test_list_exercises_shows_saved(tmp_path: Path, monkeypatch: pytest.MonkeyPa
 
     assert result.exit_code == 0
     assert "Squat | Muscle group: legs" in result.output
+
+
+def test_list_exercises_invalid_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    Path("exercises.csv").write_text("name,muscle_group\n,legs\n", encoding="utf-8")
+
+    result = CliRunner().invoke(app, ["list-exercises"])
+
+    assert result.exit_code == 1
+    assert "Could not list exercises:" in result.output

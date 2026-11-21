@@ -54,13 +54,17 @@ An exercise must be added once before logging a set. If you leave out `--muscle-
 
 ## Saved data
 
-The program creates three CSV files in the folder where you run the commands:
+The program stores data in CSV files in the folder where you run the commands:
 
 - `exercises.csv` — exercises you have added
 - `workouts.csv` — workout numbers
 - `workout_sets.csv` — sets linked to a workout number and an exercise
+- `workout_dates.csv` — dates you assign to workouts
 
-They are ignored by Git. Your data stays there between runs, even after closing the terminal. To start again from nothing, delete the three files.
+These files are ignored by Git. Your data stays there between runs, even
+after closing the terminal. To start again from nothing, delete any of
+these four CSV files that exist.
+
 
 ## Checks
 
@@ -149,6 +153,18 @@ uv run gym-workout-logger delete-set --workout-id 1 --set-number 2
 
 This removes only the selected set. Other sets and workouts are preserved.
 After deletion, later set numbers shift down by one.
+
+## Set and list workout dates
+
+After creating Workout 1, assign it a date and list the saved dates:
+
+```bash
+uv run gym-workout-logger set-workout-date --workout-id 1 --date 2026-11-21
+uv run gym-workout-logger list-workout-dates
+```
+
+Use `YYYY-MM-DD` for dates. To change a date, run `set-workout-date` again
+with the same workout ID.
 
 ## Delete a workout
 

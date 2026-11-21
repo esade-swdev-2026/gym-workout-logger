@@ -184,3 +184,10 @@ Each command creates a new container, which is automatically deleted when it fin
 The CSV files are stored in the named volume gym-workout-data, connected to /app/data inside the container.
 
 The data survives container deletion. Always use the same volume name to access previously saved workouts.
+
+
+## Use of AI
+
+We used an LLM to help plan the work for the final submission and split it into pull requests. During implementation, it helped draft the ⁠ list-exercises ⁠ command, connect it to the CLI, and write tests for an empty exercise list, a saved exercise with its muscle group, and a malformed CSV that should produce an error message and exit with code 1.
+
+We also used it during pull request reviews to suggest simplifying the set deletion logic and splitting a test into separate cases. It helped diagnose a mismatch between the Docker image names used in the build and run commands. For the README, it helped draft usage examples for ⁠ list-exercises ⁠, ⁠ exercise-progress ⁠, and ⁠ delete-workout ⁠.

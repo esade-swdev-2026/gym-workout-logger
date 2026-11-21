@@ -32,6 +32,10 @@ from gym_workout_logger.workout import (
     next_workout_id,
     summarize_workout,
 )
+from gym_workout_logger.workout_dates import (
+    list_workout_dates,
+    set_workout_date,
+)
 
 EXERCISES_FILE = Path("exercises.csv")
 WORKOUTS_FILE = Path("workouts.csv")
@@ -45,6 +49,8 @@ app.command("delete-set")(delete_set)
 app.command("list-exercises")(list_exercises)
 app.command("edit-set")(edit_set)
 app.command("exercise-progress")(exercise_progress)
+app.command("set-workout-date")(set_workout_date)
+app.command("list-workout-dates")(list_workout_dates)
 
 
 @app.callback()

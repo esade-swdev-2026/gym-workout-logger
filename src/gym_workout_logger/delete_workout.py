@@ -3,8 +3,9 @@ from pathlib import Path
 
 import typer
 
-from gym_workout_logger.storage import read_workout_sets, read_workouts
+from gym_workout_logger.storage import read_rows, read_workout_sets, read_workouts
 from gym_workout_logger.workout import find_workout
+from gym_workout_logger.workout_dates import DATE_FILE, DATE_HEADER
 
 
 def remove_workout_rows(path: Path, workout_id: int) -> None:
@@ -40,8 +41,17 @@ def delete_workout(
             typer.echo("Workout not found.", err=True)
             raise typer.Exit(code=1)
 
+        date_rows = read_rows(DATE_FILE, DATE_HEADER)
+        remaining_dates = [row for row in date_rows if int(row[0]) != workout_id]
+
         remove_workout_rows(sets_file, workout_id)
         remove_workout_rows(workouts_file, workout_id)
+
+        if len(remaining_dates) != len(date_rows):
+            with DATE_FILE.open("w", newline="", encoding="utf-8") as file:
+                writer = csv.writer(file)
+                writer.writerow(DATE_HEADER)
+                writer.writerows(remaining_dates)
 
     except (OSError, ValueError, IndexError) as error:
         typer.echo(f"Could not delete workout: {error}", err=True)

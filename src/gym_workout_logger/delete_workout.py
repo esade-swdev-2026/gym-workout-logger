@@ -42,6 +42,7 @@ def delete_workout(
 
         remove_workout_rows(sets_file, workout_id)
         remove_workout_rows(workouts_file, workout_id)
+        remove_workout_rows(Path("workout_dates.csv"), workout_id)
 
     except (OSError, ValueError, IndexError) as error:
         typer.echo(f"Could not delete workout: {error}", err=True)

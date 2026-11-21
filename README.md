@@ -94,6 +94,19 @@ uv.lock         locked dependency versions
 
 The calculations in `workout.py` use plain Python data rather than files or printing, so they are straightforward to test. `cli.py` is the thin outer layer: it reads the files, calls those functions and prints the result.
 
+## List exercises and track progress
+
+After running the examples in the Run section:
+
+```bash
+uv run gym-workout-logger list-exercises
+uv run gym-workout-logger exercise-progress "Squat"
+```
+
+`list-exercises` shows saved exercises and their muscle groups.
+`exercise-progress` shows the heaviest set for Squat in each workout
+and its highest recorded weight overall.
+
 ## List previous workouts
 
 To see all saved workout numbers, use:
@@ -136,6 +149,16 @@ uv run gym-workout-logger delete-set --workout-id 1 --set-number 2
 
 This removes only the selected set. Other sets and workouts are preserved.
 After deletion, later set numbers shift down by one.
+
+## Delete a workout
+
+Run this after the other examples that use Workout 1:
+
+```bash
+uv run gym-workout-logger delete-workout --workout-id 1
+```
+
+This deletes Workout 1 and all its logged sets.
 
 ## Run with Docker
 

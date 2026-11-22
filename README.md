@@ -54,13 +54,17 @@ An exercise must be added once before logging a set. If you leave out `--muscle-
 
 ## Saved data
 
-The program creates three CSV files in the folder where you run the commands:
+The program stores data in CSV files in the folder where you run the commands:
 
 - `exercises.csv` — exercises you have added
 - `workouts.csv` — workout numbers
 - `workout_sets.csv` — sets linked to a workout number and an exercise
+- `workout_dates.csv` — dates you assign to workouts
 
-They are ignored by Git. Your data stays there between runs, even after closing the terminal. To start again from nothing, delete the three files.
+These files are ignored by Git. Your data stays there between runs, even
+after closing the terminal. To start again from nothing, delete any of
+these four CSV files that exist.
+
 
 ## Checks
 
@@ -93,6 +97,19 @@ uv.lock         locked dependency versions
 ```
 
 The calculations in `workout.py` use plain Python data rather than files or printing, so they are straightforward to test. `cli.py` is the thin outer layer: it reads the files, calls those functions and prints the result.
+
+## List exercises and track progress
+
+After running the examples in the Run section:
+
+```bash
+uv run gym-workout-logger list-exercises
+uv run gym-workout-logger exercise-progress "Squat"
+```
+
+`list-exercises` shows saved exercises and their muscle groups.
+`exercise-progress` shows the heaviest set for Squat in each workout
+and its highest recorded weight overall.
 
 ## List previous workouts
 
@@ -137,6 +154,28 @@ uv run gym-workout-logger delete-set --workout-id 1 --set-number 2
 This removes only the selected set. Other sets and workouts are preserved.
 After deletion, later set numbers shift down by one.
 
+## Set and list workout dates
+
+After creating Workout 1, assign it a date and list the saved dates:
+
+```bash
+uv run gym-workout-logger set-workout-date --workout-id 1 --date 2026-11-21
+uv run gym-workout-logger list-workout-dates
+```
+
+Use `YYYY-MM-DD` for dates. To change a date, run `set-workout-date` again
+with the same workout ID.
+
+## Delete a workout
+
+Run this after the other examples that use Workout 1:
+
+```bash
+uv run gym-workout-logger delete-workout --workout-id 1
+```
+
+This deletes Workout 1 and all its logged sets.
+
 ## Run with Docker
 
 You can run Gym Workout Logger using Docker without installing Python or uv locally.
@@ -161,3 +200,10 @@ Each command creates a new container, which is automatically deleted when it fin
 The CSV files are stored in the named volume gym-workout-data, connected to /app/data inside the container.
 
 The data survives container deletion. Always use the same volume name to access previously saved workouts.
+
+
+## Use of AI
+
+We used an LLM to help plan the work for the final submission and split it into pull requests. During implementation, it helped draft the ⁠ list-exercises ⁠ command, connect it to the CLI, and write tests for an empty exercise list, a saved exercise with its muscle group, and a malformed CSV that should produce an error message and exit with code 1.
+
+We also used it during pull request reviews to suggest simplifying the set deletion logic and splitting a test into separate cases. It helped diagnose a mismatch between the Docker image names used in the build and run commands. For the README, it helped draft usage examples for ⁠ list-exercises ⁠, ⁠ exercise-progress ⁠, and ⁠ delete-workout ⁠.

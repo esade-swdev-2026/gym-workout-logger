@@ -1,11 +1,11 @@
 # Publishes the final Docker image to GitHub Container Registry (GHCR)
-# when the v1.0 tag is pushed.
+# when the v1.1 tag is pushed.
 name: release
 
 on:
   push:
     tags:
-      - "v1.0"
+      - "v1.1"
 
 permissions:
   contents: read
@@ -32,7 +32,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish the v1.0 image
+      - name: Publish the v1.1 image
         run: |
-          docker tag gym-workout-logger ghcr.io/esade-swdev-2026/gym-workout-logger:v1.0
-          docker push ghcr.io/esade-swdev-2026/gym-workout-logger:v1.0
+          docker tag gym-workout-logger ghcr.io/esade-swdev-2026/gym-workout-logger:v1.1
+          docker push ghcr.io/esade-swdev-2026/gym-workout-logger:v1.1

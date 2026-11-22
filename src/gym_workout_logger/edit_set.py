@@ -47,6 +47,7 @@ def edit_set(
     reps: int = typer.Option(..., "--reps"),
     weight: float = typer.Option(..., "--weight"),
 ) -> None:
+    """Change the reps and weight of one set in a workout."""
     try:
         workouts = read_workouts(Path("workouts.csv"))
 

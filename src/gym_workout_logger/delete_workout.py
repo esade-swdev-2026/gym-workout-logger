@@ -30,7 +30,7 @@ def remove_workout_rows(path: Path, workout_id: int) -> None:
 def delete_workout(
     workout_id: int = typer.Option(..., "--workout-id"),
 ) -> None:
-
+    """Delete a workout and all its logged sets."""
     workouts_file = Path("workouts.csv")
     sets_file = Path("workout_sets.csv")
 

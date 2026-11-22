@@ -83,15 +83,27 @@ To format the code before checking, use `uv run ruff format .`.
 
 ```text
 src/gym_workout_logger/
-    cli.py       terminal commands, output and error messages
-    workout.py   data classes, validation and calculations
-    storage.py   CSV file reading and writing
-    __main__.py  run the package with Python
+    cli.py             terminal commands, output and error messages
+    workout.py         data classes, validation and calculations
+    storage.py         CSV file reading and writing
+    list_exercises.py  list-exercises command
+    progress.py        exercise-progress command and its calculation
+    edit_set.py        edit-set command
+    delete_set.py      delete-set command
+    delete_workout.py  delete-workout command
+    workout_dates.py   set-workout-date and list-workout-dates commands
+    __main__.py        run the package with Python
 
 tests/
-    test_workout.py  the calculations, with plain data
-    test_storage.py  reading and writing CSV files in a temporary folder
-    test_cli.py      the commands, run with Typer's CliRunner
+    test_workout.py         the calculations, with plain data
+    test_storage.py         reading and writing CSV files in a temporary folder
+    test_cli.py             the core commands, run with Typer's CliRunner
+    test_list_exercises.py  list-exercises
+    test_progress.py        exercise-progress
+    test_edit_set.py        edit-set
+    test_delete_set.py      delete-set
+    test_delete_workout.py  delete-workout
+    test_workout_dates.py   set-workout-date and list-workout-dates
 pyproject.toml  dependencies and configuration
 uv.lock         locked dependency versions
 ```
@@ -202,8 +214,22 @@ The CSV files are stored in the named volume gym-workout-data, connected to /app
 The data survives container deletion. Always use the same volume name to access previously saved workouts.
 
 
+## Run the published image
+
+Each release is built and published to GitHub Container Registry by the `release` workflow when the `v1.0` tag is pushed. You can run it without cloning the repository:
+
+```bash
+docker pull ghcr.io/esade-swdev-2026/gym-workout-logger:v1.0
+docker run --rm ghcr.io/esade-swdev-2026/gym-workout-logger:v1.0 --help
+docker run --rm -v gym-workout-data:/app/data ghcr.io/esade-swdev-2026/gym-workout-logger:v1.0 add-exercise "Squat" --muscle-group legs
+docker run --rm -v gym-workout-data:/app/data ghcr.io/esade-swdev-2026/gym-workout-logger:v1.0 start-workout
+docker run --rm -v gym-workout-data:/app/data ghcr.io/esade-swdev-2026/gym-workout-logger:v1.0 log-set "Squat" 10 60
+docker run --rm -v gym-workout-data:/app/data ghcr.io/esade-swdev-2026/gym-workout-logger:v1.0 summary
+```
+
+
 ## Use of AI
 
-We used an LLM to help plan the work for the final submission and split it into pull requests. During implementation, it helped draft the ⁠ list-exercises ⁠ command, connect it to the CLI, and write tests for an empty exercise list, a saved exercise with its muscle group, and a malformed CSV that should produce an error message and exit with code 1.
+We used an LLM to help plan the work for the final submission and split it into pull requests. During implementation, it helped draft the `list-exercises` command, connect it to the CLI, and write tests for an empty exercise list, a saved exercise with its muscle group, and a malformed CSV that should produce an error message and exit with code 1.
 
-We also used it during pull request reviews to suggest simplifying the set deletion logic and splitting a test into separate cases. It helped diagnose a mismatch between the Docker image names used in the build and run commands. For the README, it helped draft usage examples for ⁠ list-exercises ⁠, ⁠ exercise-progress ⁠, and ⁠ delete-workout ⁠.
+We also used it during pull request reviews to suggest simplifying the set deletion logic and splitting a test into separate cases. It helped diagnose a mismatch between the Docker image names used in the build and run commands. For the README, it helped draft usage examples for `list-exercises`, `exercise-progress`, and `delete-workout`. It also helped draft the `release` workflow that publishes the image to GHCR, suggest review comments with missing test cases, and check the final README commands.

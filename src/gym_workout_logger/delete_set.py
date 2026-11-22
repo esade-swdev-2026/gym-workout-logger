@@ -30,6 +30,7 @@ def delete_set(
     workout_id: int = typer.Option(..., "--workout-id"),
     set_number: int = typer.Option(..., "--set-number"),
 ) -> None:
+    """Delete one set from a workout by its set number."""
     try:
         workouts = read_workouts(Path("workouts.csv"))
         if find_workout(workouts, workout_id) is None:

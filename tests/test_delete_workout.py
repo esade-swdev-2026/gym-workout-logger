@@ -9,9 +9,6 @@ from gym_workout_logger.delete_workout import rows_without_workout
 runner = CliRunner()
 
 
-# Unit tests for rows_without_workout()
-
-
 def test_rows_without_workout_removes_matching_rows() -> None:
     rows = [
         ["1", "Bench Press", "3", "10"],

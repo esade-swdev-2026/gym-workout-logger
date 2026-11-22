@@ -8,6 +8,10 @@ from gym_workout_logger.workout import find_workout
 from gym_workout_logger.workout_dates import DATE_FILE, DATE_HEADER
 
 
+def rows_without_workout(rows: list[list[str]], workout_id: int) -> list[list[str]]:
+    return [row for row in rows if int(row[0]) != workout_id]
+
+
 def remove_workout_rows(path: Path, workout_id: int) -> None:
     if not path.exists():
         return
@@ -16,10 +20,7 @@ def remove_workout_rows(path: Path, workout_id: int) -> None:
         reader = csv.reader(file)
         rows = list(reader)
 
-    remaining_rows = [rows[0]]
-    for row in rows[1:]:
-        if int(row[0]) != workout_id:
-            remaining_rows.append(row)
+    remaining_rows = [rows[0], *rows_without_workout(rows[1:], workout_id)]
 
     with path.open("w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
@@ -42,7 +43,7 @@ def delete_workout(
             raise typer.Exit(code=1)
 
         date_rows = read_rows(DATE_FILE, DATE_HEADER)
-        remaining_dates = [row for row in date_rows if int(row[0]) != workout_id]
+        remaining_dates = rows_without_workout(date_rows, workout_id)
 
         remove_workout_rows(sets_file, workout_id)
         remove_workout_rows(workouts_file, workout_id)

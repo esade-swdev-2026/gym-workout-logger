@@ -26,6 +26,7 @@ def set_workout_date(
     workout_id: int = typer.Option(..., "--workout-id"),
     date_text: str = typer.Option(..., "--date"),
 ) -> None:
+    """Assign a date (YYYY-MM-DD) to a workout."""
     try:
         parsed = date.fromisoformat(date_text)
         if parsed.isoformat() != date_text:
@@ -46,6 +47,7 @@ def set_workout_date(
 
 
 def list_workout_dates() -> None:
+    """Show the dates assigned to workouts."""
     try:
         rows = read_rows(DATE_FILE, DATE_HEADER)
         rows.sort(key=lambda row: int(row[0]))

@@ -21,6 +21,7 @@ def max_weight_by_workout(
 
 
 def exercise_progress(name: str) -> None:
+    """Show the heaviest set of one exercise in each workout."""
     try:
         exercises = read_exercises(Path("exercises.csv"))
         workout_sets = read_workout_sets(Path("workout_sets.csv"))

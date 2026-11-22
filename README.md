@@ -216,15 +216,15 @@ The data survives container deletion. Always use the same volume name to access 
 
 ## Run the published image
 
-Each release is built and published to GitHub Container Registry by the `release` workflow when the `v1.0` tag is pushed. You can run it without cloning the repository:
+Each release is built and published to GitHub Container Registry by the `release` workflow when the `v1.1` tag is pushed. You can run it without cloning the repository:
 
 ```bash
-docker pull ghcr.io/esade-swdev-2026/gym-workout-logger:v1.0
-docker run --rm ghcr.io/esade-swdev-2026/gym-workout-logger:v1.0 --help
-docker run --rm -v gym-workout-data:/app/data ghcr.io/esade-swdev-2026/gym-workout-logger:v1.0 add-exercise "Squat" --muscle-group legs
-docker run --rm -v gym-workout-data:/app/data ghcr.io/esade-swdev-2026/gym-workout-logger:v1.0 start-workout
-docker run --rm -v gym-workout-data:/app/data ghcr.io/esade-swdev-2026/gym-workout-logger:v1.0 log-set "Squat" 10 60
-docker run --rm -v gym-workout-data:/app/data ghcr.io/esade-swdev-2026/gym-workout-logger:v1.0 summary
+docker pull ghcr.io/esade-swdev-2026/gym-workout-logger:v1.1
+docker run --rm ghcr.io/esade-swdev-2026/gym-workout-logger:v1.1 --help
+docker run --rm -v gym-workout-data:/app/data ghcr.io/esade-swdev-2026/gym-workout-logger:v1.1 add-exercise "Squat" --muscle-group legs
+docker run --rm -v gym-workout-data:/app/data ghcr.io/esade-swdev-2026/gym-workout-logger:v1.1 start-workout
+docker run --rm -v gym-workout-data:/app/data ghcr.io/esade-swdev-2026/gym-workout-logger:v1.1 log-set "Squat" 10 60
+docker run --rm -v gym-workout-data:/app/data ghcr.io/esade-swdev-2026/gym-workout-logger:v1.1 summary
 ```
 
 
